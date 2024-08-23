@@ -9,6 +9,7 @@ interface UserData extends Document {
     password: string;
     role: string;
     Company?: mongoose.Types.ObjectId[];
+    JobPost?:mongoose.Types.ObjectId[];
     bio?: string;
     skills?: string;
     ResumeFile?: string;
@@ -56,6 +57,10 @@ const UserSchema: mongoose.Schema<UserData> = new mongoose.Schema({
     Company: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Company",
+    }],
+    JobPost: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "JOBSCHEMA",
     }]
 
 }, { timestamps: true });

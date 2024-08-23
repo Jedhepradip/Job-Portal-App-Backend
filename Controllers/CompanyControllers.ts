@@ -53,6 +53,9 @@ export const getcompany = async (req: CustomRequest, res: Response) => {
         let loginuserid = req.user?.id;
         let user = await UserModel.findById(loginuserid);
 
+        if(!user){
+            return res.status(401).json({message:"Authorization User..."})
+        }
         if (user?.Company?.length) {
             const companies = [];
             for (const CompanyId of user.Company) {
