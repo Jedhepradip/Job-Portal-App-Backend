@@ -1,6 +1,16 @@
-import mongoose from "mongoose";
+import mongoose,{Document} from "mongoose";
 
-const CompanySchema = new mongoose.Schema({
+interface Company extends Document{
+    CompanyLogo:string,
+    CompanyName:string,
+    description:string,
+    website:string,
+    location:string,
+    createdAt:Date,
+    UserId:object,
+}
+
+const CompanySchema: mongoose.Schema<Company> = new mongoose.Schema({
     CompanyLogo: {
         type: String,
     },
@@ -30,26 +40,3 @@ const CompanySchema = new mongoose.Schema({
 
 const company = mongoose.model("Company", CompanySchema)
 export default company
-
-
-// name: {
-//     type: String, required: true
-// },
-// location: {
-//     type: String
-// },
-// website: {
-//     type: String
-// },
-// description: {
-//     type: String
-// },
-// recruiters: [{
-//     type: mongoose.Schema.Types.ObjectId, ref: 'Recruiter'
-// }],
-//     jobs: [{
-//         type: mongoose.Schema.Types.ObjectId, ref: 'Job'
-//     }],
-//         createdAt: {
-//     type: Date, default: Date.now
-// }

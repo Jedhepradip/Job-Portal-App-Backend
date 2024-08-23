@@ -8,7 +8,7 @@ interface JobData extends Document {
     location: string;
     jobtype: string;
     position: number
-    experience: number;
+    experienceLevel: number;
     JobPostDate: Date;
     company: object;
     CreatedBy: object;
@@ -23,8 +23,7 @@ const JOBSCHEMA: mongoose.Schema<JobData> = new mongoose.Schema({
         type: String,
         required: true
     },
-    requiements: [
-        {
+    requiements: [ {
             type: String,
             required: true
         }
@@ -45,7 +44,7 @@ const JOBSCHEMA: mongoose.Schema<JobData> = new mongoose.Schema({
         type: Number,
         required: true
     },
-    experience: {
+    experienceLevel: {
         type: Number,
         required: true
     },

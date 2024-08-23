@@ -1,8 +1,13 @@
-import jwt from "jsonwebtoken";
 import express, { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
+// Extend the Request interface to include a 'user' property
+interface CustomRequest extends Request {
+    user?: any;  // You can replace 'any' with the specific type you expect for 'user'
+}
+
+export const jwtAuthMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
     const authorization = req.headers.authorization;
 
     // Check if the authorization header exists
@@ -21,8 +26,7 @@ export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunctio
         const decoded = jwt.verify(token, process.env.SECRET_KEY || "default_secret_key");
 
         // Attach the decoded user information to the request object
-        
-        // req.user = decoded;
+        req.user = decoded;
 
         // Pass control to the next middleware or route handler
         next();

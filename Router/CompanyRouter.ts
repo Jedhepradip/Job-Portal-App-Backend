@@ -1,18 +1,11 @@
 import express from "express";
 import { CompanyUpdate, getcompany, getCompanyById, registerCompany } from "../Controllers/CompanyControllers";
-
+import { jwtAuthMiddleware } from "../Middewares/jwtAuthMiddleware";
 const router = express.Router();
 
-// POST /Company/registration
-router.post("/registration", registerCompany);
-
-// GET /Company/get
-router.get("/get", getcompany);
-
-// GET /Company/getInformationById/:id
-router.get("/getInformationById/:id", getCompanyById);
-
-// PUT /Company/UpdateCompany/:id
-router.put("/UpdateCompany/:id", CompanyUpdate);
+router.post("/registration",jwtAuthMiddleware, registerCompany);
+router.get("/get",jwtAuthMiddleware, getcompany);
+router.get("/getInformationById/:id",jwtAuthMiddleware, getCompanyById);
+router.put("/UpdateCompany/:id",jwtAuthMiddleware, CompanyUpdate);
 
 export default router;

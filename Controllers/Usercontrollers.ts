@@ -7,6 +7,7 @@ import { generateToken } from "../Middewares/generateToken";
 export const RegistrationUser = async (req: Request, res: Response) => {
     try {
         const { name, email, mobile, password, role } = req.body
+
         if (!name || !email || !mobile || !password || !role) {
             return res.status(400).json({ message: "Something is missing..." })
         }
@@ -35,7 +36,6 @@ export const RegistrationUser = async (req: Request, res: Response) => {
             email: string;
             name: string;
         }
-
         const payload: UserPayload = {
             id: User.id,
             email: User.email,
@@ -43,10 +43,8 @@ export const RegistrationUser = async (req: Request, res: Response) => {
         };
 
         const token = generateToken(JSON.stringify(payload));
-
         await User.save()
-
-        return res.status(200).json({ message: "Registration Successful..", token })
+        return res.status(200).json({ message: "Registration Successful..", token,User })
 
     } catch (error) {
         console.log(error);
