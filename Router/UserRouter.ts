@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/User/Registration", RegistrationUser);
 router.post("/User/login",UserLogin)
-router.put("/User/Update/Profile",UserProfileUpdata)
+router.put("/User/Update/Profile",jwtAuthMiddleware,UserProfileUpdata)
 
 export default router

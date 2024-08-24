@@ -27,8 +27,8 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
         const JobPost = new jobModel({
             title,
             description,
-            requiements,
-            salary,
+            requiements: requiements.split(","),
+            salary: Number(salary),
             location,
             jobtype,
             position,
@@ -41,11 +41,27 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
 
         if (FindUser) {
             FindUser.JobPost?.push(JobPost.id)
-        }        
+        }
         return res.status(200).json({ message: "New Job created Successfully...", JobPost })
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error..." })
+    }
+}
+
+// Get All Jobs
+export const GetAllJobs = async (req: Request, res: Response) => {
+    try {
+        const Jobs = await jobModel.find().populate({
+            path: "Company"
+        }).populate({ path: "User" });
+        if (!Jobs) {
+            return res.status(400).json({ message: "Jobs Not Found..." })
+        }
+        return res.status(200).json(Jobs)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error..!" })
     }
 }

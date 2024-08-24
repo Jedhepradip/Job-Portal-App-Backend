@@ -3,6 +3,14 @@ import UserData from "../Models/UserModel";
 import bcrypt from "bcrypt"
 import { generateToken } from "../Middewares/generateToken";
 
+
+interface CustomRequest extends Request {
+    user?: {
+        id: string;  // Define the specific type you expect for 'user.id'
+        // Add other properties if needed
+    };
+}
+
 //User Registration
 export const RegistrationUser = async (req: Request, res: Response) => {
     try {
@@ -44,7 +52,7 @@ export const RegistrationUser = async (req: Request, res: Response) => {
 
         const token = generateToken(JSON.stringify(payload));
         await User.save()
-        return res.status(200).json({ message: "Registration Successful..", token,User })
+        return res.status(200).json({ message: "Registration Successful..", token, User })
 
     } catch (error) {
         console.log(error);
@@ -92,34 +100,42 @@ export const UserLogin = async (req: Request, res: Response) => {
 }
 
 //User Profile Update 
-export const UserProfileUpdata = async (req: Request, res: Response) => {
+export const UserProfileUpdata = async (req: CustomRequest, res: Response) => {
     try {
         let { name, email, mobile, password, bio, skills } = req.body;
-        // const UserId = req.user.id
-        let UserId = "66c75e18a8234c614c9d3c3e"
-        const User = await UserData.findById({ _id: UserId.toString() })
-        console.log(req.body);
-
-        const skillaArray = skills.split(",");
-        console.log(skillaArray);
+        const UserId = req.user?.id
+        let User = await UserData.findById(UserId)
 
         if (!name) name = User?.name;
         if (!bio) bio = User?.bio;
         if (!skills) skills = User?.skills
 
         if (email) {
-            const emailexist = await UserData.findById({ email: email })
-            if (emailexist?.email !== User?.email) {
-                return res.status(400).json({ message: "Email already exists" })
+            const emailexist = await UserData.findOne({ email })
+            if (emailexist) {
+                let emailcheck: Boolean = email == User?.email
+                if (emailcheck) {
+                    return res.status(400).json({ message: "Email already exists..." })
+                }
             }
         }
 
         if (mobile) {
-            const mobileexist = await UserData.findById({ mobile: mobile })
-            if (mobileexist?.mobile !== User?.mobile) {
-                return res.status(400).json({ message: "Phone Number already exists" })
+            const mobileexist = await UserData.findOne({ mobile })
+            if (mobileexist) {
+                let mobileCjeck: Boolean = mobile == User?.mobile
+                if (mobileCjeck) {
+                    return res.status(400).json({ message: "Phone Number already exists..." })
+                }
             }
         }
+
+        // if (password) {
+        //     let haspassword = bcrypt.hash(password,11);
+        //     User?.password:String = await haspassword;
+        // }
+
+        return res.status(200).json({ message: "Profile update successfully..." })
 
     } catch (error) {
         console.log(error);
