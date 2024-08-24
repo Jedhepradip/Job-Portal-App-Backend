@@ -50,7 +50,7 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     }
 }
 
-// Get All Jobs
+// Get All Jobs student
 export const GetAllJobs = async (req: Request, res: Response) => {
     try {
         const Jobs = await jobModel.find().populate({
@@ -63,5 +63,34 @@ export const GetAllJobs = async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error..!" })
+    }
+}
+
+// admin created Jobs 
+export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response) => {
+    try {
+        const UserId = req.user?.id;
+
+        let user = await UserModel.findById(UserId)
+        if (!user) {
+            return res.status(400).json({ message: "Jobs Not Found..." })
+        }
+
+        if (user.JobPost?.length) {
+            const Jobs = [];
+            for (const JonsId of user.JobPost) {
+                let Id = JonsId.toHexString();
+                let JobsFind = await jobModel.findById(Id);
+                if (JobsFind) {
+                    Jobs.push(JobsFind);
+                }
+            }
+            return res.status(200).json({ message: "Fetch successfully...", Jobs });
+        }
+        return res.status(404).json({ message: "No companies found for the user." });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error..." })
     }
 }

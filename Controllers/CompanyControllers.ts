@@ -22,13 +22,14 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
             return res.status(400).json({ message: "You can't register same company..." })
         }
 
-        let user = await UserModel.findById(LoginUserId)
+        let user = await UserModel.findById(LoginUserId).populate({ path: "Company" })
+
         if (!user) {
             return res.status(400).json({ message: "User Not Found..." })
         }
         const Companystord = new CompantData({
             CompanyName,
-            createdAt:Date.now(),
+            createdAt: Date.now(),
             UserId: LoginUserId,
         })
 
@@ -51,10 +52,11 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
 export const getcompany = async (req: CustomRequest, res: Response) => {
     try {
         let loginuserid = req.user?.id;
-        let user = await UserModel.findById(loginuserid);
+        let user = await UserModel.findById(loginuserid)
+        // .populate({path:"Company"})
 
-        if(!user){
-            return res.status(401).json({message:"Authorization User..."})
+        if (!user) {
+            return res.status(401).json({ message: "Authorization User..." })
         }
         if (user?.Company?.length) {
             const companies = [];
