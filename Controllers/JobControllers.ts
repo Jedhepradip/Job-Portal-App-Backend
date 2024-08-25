@@ -9,6 +9,7 @@ interface CustomRequest extends Request {
     };
 }
 
+// Jobs Post Company
 export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     try {
         const { title, description, requiements, salary, location, jobtype, position, experienceLevel, company } = req.body;
@@ -50,6 +51,21 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     }
 }
 
+//Get Jobs ById
+export const GetAllJobsById = async (req: Request, res: Response) => {
+    try {
+        const JobsId = req.params.id;
+        const Jobs = await jobModel.findById(JobsId);
+        if (!Jobs) {
+            return res.status(404).json({ message: "Jons Not Found...!" })
+        }
+        return res.status(200).json(Jobs)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "internal Server Error...!" })
+    }
+}
+
 // Get All Jobs student
 export const GetAllJobs = async (req: Request, res: Response) => {
     try {
@@ -57,7 +73,7 @@ export const GetAllJobs = async (req: Request, res: Response) => {
             path: "Company"
         }).populate({ path: "User" });
         if (!Jobs) {
-            return res.status(400).json({ message: "Jobs Not Found..." })
+            return res.status(404).json({ message: "Jobs Not Found..." })
         }
         return res.status(200).json(Jobs)
     } catch (error) {
@@ -73,7 +89,7 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
 
         let user = await UserModel.findById(UserId)
         if (!user) {
-            return res.status(400).json({ message: "Jobs Not Found..." })
+            return res.status(404).json({ message: "Jobs Not Found..." })
         }
 
         if (user.JobPost?.length) {

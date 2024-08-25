@@ -25,7 +25,7 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
         let user = await UserModel.findById(LoginUserId).populate({ path: "Company" })
 
         if (!user) {
-            return res.status(400).json({ message: "User Not Found..." })
+            return res.status(404).json({ message: "User Not Found..." })
         }
         const Companystord = new CompantData({
             CompanyName,
@@ -56,7 +56,7 @@ export const getcompany = async (req: CustomRequest, res: Response) => {
         // .populate({path:"Company"})
 
         if (!user) {
-            return res.status(401).json({ message: "Authorization User..." })
+            return res.status(404).json({ message: "Authorization User..." })
         }
         if (user?.Company?.length) {
             const companies = [];

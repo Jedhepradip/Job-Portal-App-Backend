@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import 'dotenv/config';
 import indexrouter from "./Router/UserRouter";
@@ -18,6 +18,10 @@ const corsOptions = {
     credentials: true,
 };
 
+app.get("/pradip",(req:Request,res:Response) => {
+    res.send("hello")
+})
+
 app.use(cors(corsOptions));
 
 // Mounting routers
@@ -25,7 +29,7 @@ app.use("/", indexrouter);
 app.use("/Company", CompanyRouter);
 app.use("/Jobs", JobRouter);
 
-app.listen(process.env.PORT, (): void => {   
+app.listen(process.env.PORT, (): void => {
     console.log(`Server Running On http://localhost:${process.env.PORT}`);
 });
 

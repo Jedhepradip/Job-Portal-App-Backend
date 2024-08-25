@@ -66,7 +66,7 @@ export const UserLogin = async (req: Request, res: Response) => {
         const { email, password, role } = req.body;
         let Useremail = await UserData.findOne({ email })
         if (!Useremail) {
-            return res.status(400).json({ message: "User not Found..." })
+            return res.status(404).json({ message: "User not Found..." })
         }
 
         let machpassword = await bcrypt.compare(password, Useremail.password)
