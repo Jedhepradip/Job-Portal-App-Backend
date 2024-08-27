@@ -9,7 +9,7 @@ interface CustomRequest extends Request {
     };
 }
 
-// Jobs Post Company
+// Jobs Post Company admin
 export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     try {
         const { title, description, requirements, salary, location, jobtype, position, experienceLevel, company } = req.body;
@@ -88,24 +88,25 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
     try {
         const UserId = req.user?.id;
 
-        let user = await UserModel.findById(UserId).populate({
-            path: "JobPost",
-        }).populate({
-            path: "Company"
-        })
+        let user = await UserModel.findById(UserId)
+        // let user = await UserModel.findById(UserId).populate({
+        //     path: "JobPost",
+        // }).populate({
+        //     path: "Company"
+        // })
         if (!user) {
             return res.status(404).json({ message: "Jobs Not Found..." })
         }
 
         if (user.JobPost?.length) {
-            // const Jobs = [];
-            // for (const JonsId of user.JobPost) {
-            //     let Id = JonsId.toHexString();
-            //     let JobsFind = await jobModel.findById(Id);
-            //     if (JobsFind) {
-            //         Jobs.push(JobsFind);
-            //     }
-            // }
+            const Jobs = [];
+            for (const JonsId of user.JobPost) {
+                let Id = JonsId.toHexString();
+                let JobsFind = await jobModel.findById(Id);
+                if (JobsFind) {
+                    Jobs.push(JobsFind);
+                }
+            }
             return res.status(200).json({ message: "Fetch successfully...", user });
         }
         return res.status(404).json({ message: "No companies found for the user." });

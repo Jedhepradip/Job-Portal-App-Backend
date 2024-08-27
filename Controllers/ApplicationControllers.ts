@@ -7,6 +7,8 @@ interface CustomRequest extends Request {
         // Add other properties if needed
     };
 }
+
+// Jobs Apply A Student
 export const ApplyJobs = async (req: CustomRequest, res: Response) => {
     try {
         const UserId = req.user?.id
@@ -31,7 +33,8 @@ export const ApplyJobs = async (req: CustomRequest, res: Response) => {
         return res.status(500).json({ message: "Internal server Error...!" })
     }
 }
-//applied Jobs from student
+
+//applied Jobs from student show profile
 export const getappliedJobs = async (req: CustomRequest, res: Response) => {
     try {
         const User = req.user?.id
@@ -52,7 +55,7 @@ export const getappliedJobs = async (req: CustomRequest, res: Response) => {
     }
 }
 
-// Admin show the Applied jobs in user 
+// kiti user ni job ver apply kela aahe the show hoil admin la 
 export const GetApplicantsJobs = async (req: Request, res: Response) => {
     try {
         const JobsId = req.params.id
@@ -75,7 +78,7 @@ export const GetApplicantsJobs = async (req: Request, res: Response) => {
     }
 }
 
-//updata Status 
+//updata Statu//s 
 export const UpdataStatus = async (req: Request, res: Response) => {
     try {
         const { status } = req.body;
