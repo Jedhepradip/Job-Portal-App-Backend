@@ -12,9 +12,9 @@ interface CustomRequest extends Request {
 // Jobs Post Company
 export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     try {
-        const { title, description, requiements, salary, location, jobtype, position, experienceLevel, company } = req.body;
+        const { title, description, requirements, salary, location, jobtype, position, experienceLevel, company } = req.body;
 
-        if (!title || !description || !requiements || !salary || !location || !jobtype || !position || !experienceLevel || !company) {
+        if (!title || !description || !requirements || !salary || !location || !jobtype || !position || !experienceLevel || !company) {
             return res.status(400).json({ message: "Something is missing..." })
         }
 
@@ -25,10 +25,10 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
             return res.status(401).json({ message: "Authorization User..." })
         }
 
-        const JobPost = new jobModel({
+        const PostJobs = new jobModel({
             title,
             description,
-            requiements: requiements.split(","),
+            requirements: requirements.split(","),
             salary: Number(salary),
             location,
             jobtype,
@@ -38,12 +38,13 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
             CreatedBy: UserId,
         })
 
-        await JobPost.save()
+        await PostJobs.save()
 
         if (FindUser) {
-            FindUser.JobPost?.push(JobPost.id)
+            FindUser.JobPost?.push(PostJobs.id)
+            FindUser.save();
         }
-        return res.status(200).json({ message: "New Job created Successfully...", JobPost })
+        return res.status(200).json({ message: "New Job created Successfully...", PostJobs })
 
     } catch (error) {
         console.log(error);
@@ -70,8 +71,8 @@ export const GetAllJobsById = async (req: Request, res: Response) => {
 export const GetAllJobs = async (req: Request, res: Response) => {
     try {
         const Jobs = await jobModel.find().populate({
-            path: "Company"
-        }).populate({ path: "User" });
+            path: "company"
+        }).populate({ path: "CreatedBy" });
         if (!Jobs) {
             return res.status(404).json({ message: "Jobs Not Found..." })
         }
@@ -82,26 +83,30 @@ export const GetAllJobs = async (req: Request, res: Response) => {
     }
 }
 
-// admin created Jobs 
+// admin created Jobs in Company
 export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response) => {
     try {
         const UserId = req.user?.id;
 
-        let user = await UserModel.findById(UserId)
+        let user = await UserModel.findById(UserId).populate({
+            path: "JobPost",
+        }).populate({
+            path: "Company"
+        })
         if (!user) {
             return res.status(404).json({ message: "Jobs Not Found..." })
         }
 
         if (user.JobPost?.length) {
-            const Jobs = [];
-            for (const JonsId of user.JobPost) {
-                let Id = JonsId.toHexString();
-                let JobsFind = await jobModel.findById(Id);
-                if (JobsFind) {
-                    Jobs.push(JobsFind);
-                }
-            }
-            return res.status(200).json({ message: "Fetch successfully...", Jobs });
+            // const Jobs = [];
+            // for (const JonsId of user.JobPost) {
+            //     let Id = JonsId.toHexString();
+            //     let JobsFind = await jobModel.findById(Id);
+            //     if (JobsFind) {
+            //         Jobs.push(JobsFind);
+            //     }
+            // }
+            return res.status(200).json({ message: "Fetch successfully...", user });
         }
         return res.status(404).json({ message: "No companies found for the user." });
 

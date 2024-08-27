@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import jobModel from "../Models/JobModel";
 import Applicationcom from "../Models/ApplicationMode";
-import router from "../Router/UserRouter";
 interface CustomRequest extends Request {
     user?: {
         id: string;  // Define the specific type you expect for 'user.id'
@@ -23,7 +22,7 @@ export const ApplyJobs = async (req: CustomRequest, res: Response) => {
 
         await ApplicationUser.save()
         if (jobs) {
-            // jobModel.applications?.push(ApplicationUser.id); // Push the ObjectId to the Company array
+            jobs.applications?.push(ApplicationUser.id); // Push the ObjectId to the Company array
             await jobs.save(); // Don't forget to save the document after modification
         }
         return res.status(200).json({ message: "Job applied successfully..." })
@@ -58,10 +57,10 @@ export const GetApplicantsJobs = async (req: Request, res: Response) => {
     try {
         const JobsId = req.params.id
         const jobs = await jobModel.findById(JobsId).populate({
-            path: "Application",
-            populate: ({
-                path: "applicant" //User Applied
-            })
+            path: "applicant",
+            // populate: ({
+            //     path: "applicant" //User Applied
+            // })
         })
 
         if (!jobs) {

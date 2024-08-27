@@ -3,7 +3,7 @@ import mongoose, { Document } from "mongoose";
 interface JobData extends Document {
     title: string;
     description: string;
-    requiements: string;
+    requirements: [];
     salary: number;
     location: string;
     jobtype: string;
@@ -23,11 +23,11 @@ const JOBSCHEMA: mongoose.Schema<JobData> = new mongoose.Schema({
         type: String,
         required: true
     },
-    requiements: [ {
-            type: String,
-            required: true
-        }
-    ],
+    requirements: {
+        type: [String],
+        required: true,
+        default: []  // This sets the default to an empty array
+    },
     salary: {
         type: Number,
         required: true
