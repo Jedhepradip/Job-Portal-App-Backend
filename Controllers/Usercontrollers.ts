@@ -16,16 +16,18 @@ export const RegistrationUser = async (req: Request, res: Response) => {
     try {
         const { name, email, mobile, password, role } = req.body
 
+        console.log(req.body);
+        
         if (!name || !email || !mobile || !password || !role) {
             return res.status(400).json({ message: "Something is missing..." })
         }
 
-        const Emailexists = await UserData.findOne({ email })
+        const Emailexists = await UserData.findOne({email:email})
         if (Emailexists) {
             return res.status(400).json({ message: "User already exist with this email..." })
         }
 
-        const mobileexist = await UserData.findOne({ mobile })
+        const mobileexist = await UserData.findOne({mobile:mobile})
         if (mobileexist) {
             return res.status(400).json({ message: "User already exist with this mobile number..." })
         }
