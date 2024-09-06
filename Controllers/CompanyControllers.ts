@@ -16,6 +16,8 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
         if (!CompanyName) {
             return res.status(400).json({ message: "Something is missing..." })
         }
+        console.log(req.body);
+
 
         const company = await CompantData.findOne({ CompanyName })
         if (company) {

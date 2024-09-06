@@ -41,7 +41,7 @@ const UserSchema: mongoose.Schema<UserData> = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["student", "Recruiter"]
+        enum: ["student", "recruiter"]
     },
     bio: {
         type: String,
