@@ -104,7 +104,7 @@ export const UserLogin = async (req: Request, res: Response) => {
 //User Profile Update 
 export const UserProfileUpdata = async (req: CustomRequest, res: Response) => {
     try {
-        let { name, email, mobile, password, bio, skills } = req.body;
+        let { name, email, mobile, bio, skills } = req.body;
         const UserId = req.user?.id
         let User = await UserData.findById(UserId)
 
@@ -130,12 +130,7 @@ export const UserProfileUpdata = async (req: CustomRequest, res: Response) => {
                     return res.status(400).json({ message: "Phone Number already exists..." })
                 }
             }
-        }
-
-        // if (password) {
-        //     let haspassword = bcrypt.hash(password,11);
-        //     User?.password:String = await haspassword;
-        // }
+        }      
 
         return res.status(200).json({ message: "Profile update successfully..." })
 
