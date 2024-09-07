@@ -17,17 +17,17 @@ export const RegistrationUser = async (req: Request, res: Response) => {
         const { name, email, mobile, password, role } = req.body
 
         console.log(req.body);
-        
+
         if (!name || !email || !mobile || !password || !role) {
             return res.status(400).json({ message: "Something is missing..." })
         }
 
-        const Emailexists = await UserData.findOne({email:email})
+        const Emailexists = await UserData.findOne({ email: email })
         if (Emailexists) {
             return res.status(400).json({ message: "User already exist with this email..." })
         }
 
-        const mobileexist = await UserData.findOne({mobile:mobile})
+        const mobileexist = await UserData.findOne({ mobile: mobile })
         if (mobileexist) {
             return res.status(400).json({ message: "User already exist with this mobile number..." })
         }
@@ -101,41 +101,67 @@ export const UserLogin = async (req: Request, res: Response) => {
     }
 }
 
-//User Profile Update 
-export const UserProfileUpdata = async (req: CustomRequest, res: Response) => {
+//User Get Information
+export const UserInfomation = async (req: CustomRequest, res: Response) => {
     try {
-        let { name, email, mobile, bio, skills } = req.body;
-        const UserId = req.user?.id
-        let User = await UserData.findById(UserId)
+        const UserId = req.user?.id;
+        const user = await UserData.findById(UserId);
 
-        if (!name) name = User?.name;
-        if (!bio) bio = User?.bio;
-        if (!skills) skills = User?.skills
-
-        if (email) {
-            const emailexist = await UserData.findOne({ email })
-            if (emailexist) {
-                let emailcheck: Boolean = email == User?.email
-                if (emailcheck) {
-                    return res.status(400).json({ message: "Email already exists..." })
-                }
-            }
+        if (!user) {
+            return res.status(400).json({ message: "User Not Found " })
         }
 
-        if (mobile) {
-            const mobileexist = await UserData.findOne({ mobile })
-            if (mobileexist) {
-                let mobileCjeck: Boolean = mobile == User?.mobile
-                if (mobileCjeck) {
-                    return res.status(400).json({ message: "Phone Number already exists..." })
-                }
-            }
-        }      
-
-        return res.status(200).json({ message: "Profile update successfully..." })
+        return res.status(200).json(user)
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server Error..." })
+        return res.status(500).json({ message: "Internal Server Error" })
     }
 }
+
+
+export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
+    try {
+        const { name, email, mobile, bio, skills } = req.body;
+        const userId = req.user?.id;
+
+        // Find the user by their ID
+        const user = await UserData.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Update fields only if they are provided in the request body
+        if (name) user.name = name;
+        if (bio) user.bio = bio;
+        if (skills) user.skills = skills;
+        if (mobile) user.mobile = mobile;
+
+        // Check for email uniqueness
+        if (email && email !== user.email) {
+            const emailCheck = await UserData.findOne({ email });
+            if (emailCheck) {
+                return res.status(400).json({ message: "Email already exists" });
+            }
+            user.email = email; // Update email if it's unique
+        }
+
+        // Check for mobile uniqueness
+        if (mobile && mobile !== user.mobile) {
+            const mobileCheck = await UserData.findOne({ mobile });
+            if (mobileCheck) {
+                return res.status(400).json({ message: "Mobile number already exists" });
+            }
+            user.mobile = mobile; // Update mobile if it's unique
+        }
+
+        // Save the updated user information to the database
+        await user.save();
+
+        return res.status(200).json({ message: "Profile updated successfully", user });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
