@@ -125,40 +125,42 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
         const { name, email, mobile, bio, skills } = req.body;
         const userId = req.user?.id;
 
+        const reqbody = req.body;
+
         // Find the user by their ID
         const user = await UserData.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Update fields only if they are provided in the request body
-        if (name) user.name = name;
-        if (bio) user.bio = bio;
-        if (skills) user.skills = skills;
-        if (mobile) user.mobile = mobile;
+        console.log(skills.split(","));
+        reqbody.skills = skills.split(",")
 
-        // Check for email uniqueness
-        if (email && email !== user.email) {
-            const emailCheck = await UserData.findOne({ email });
-            if (emailCheck) {
-                return res.status(400).json({ message: "Email already exists" });
+        if (email) {
+            const EmailCheck = await UserData.findOne({ email })
+            if (EmailCheck) {
+                if (!(EmailCheck.email == user.email)) {
+                    return res.status(400).json({ message: "Email already exists" });
+                }
             }
-            user.email = email; // Update email if it's unique
         }
 
-        // Check for mobile uniqueness
-        if (mobile && mobile !== user.mobile) {
-            const mobileCheck = await UserData.findOne({ mobile });
-            if (mobileCheck) {
-                return res.status(400).json({ message: "Mobile number already exists" });
+        if (mobile) {
+            const MobileCheck = await UserData.findOne({ mobile })
+            if (MobileCheck) {
+                if (!(MobileCheck.mobile == user.mobile)) {
+                    return res.status(400).json({ message: "Mobile Number already exists" });
+                }
             }
-            user.mobile = mobile; // Update mobile if it's unique
         }
 
-        // Save the updated user information to the database
-        await user.save();
+        const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {
+            new: true
+        })
 
-        return res.status(200).json({ message: "Profile updated successfully", user });
+        console.log("updatedUser :", updatedUser);
+
+        return res.status(200).json({ message: "Profile updated successfully", updatedUser });
 
     } catch (error) {
         console.error(error);
