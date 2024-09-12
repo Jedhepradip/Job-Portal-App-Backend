@@ -18,7 +18,6 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
         }
         console.log(req.body);
 
-
         const company = await CompantData.findOne({ CompanyName })
         if (company) {
             return res.status(400).json({ message: "You can't register same company..." })
@@ -50,7 +49,7 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
     }
 }
 
-//get companydata to create Login user 
+//get companydata to create Login user  / addmin
 export const getcompany = async (req: CustomRequest, res: Response) => {
     try {
         let loginuserid = req.user?.id;
@@ -100,15 +99,11 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         const CompanyLogo = req.file;
         const companyId = req.params.id
 
+        console.log(req.body);
+        
         const comapny = await CompantData.findById(companyId)
 
         const comapnyupdate = { CompanyName, description, website, location }
-        if (CompanyName) {
-            let FindCompanuname = await CompantData.findOne({ CompanyName })
-            if (FindCompanuname) {
-                return res.status(400).json({ message: "You can't register same company..." })
-            }
-        }
 
         if (!CompanyName) comapnyupdate.CompanyName = comapny?.CompanyName;
         if (!description) comapnyupdate.description = comapny?.description;
@@ -116,6 +111,8 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         if (!location) comapnyupdate.location = comapny?.location;
 
         const updatacomapny = await CompantData.findByIdAndUpdate(companyId, comapnyupdate, { new: true })
+
+        console.log(updatacomapny);
 
         return res.status(200).json({ updatacomapny })
 
