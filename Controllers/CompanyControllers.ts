@@ -98,12 +98,18 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         let { CompanyName, description, website, location } = req.body
         const CompanyLogo = req.file;
         const companyId = req.params.id
-
         console.log(req.body);
-        
         const comapny = await CompantData.findById(companyId)
-
         const comapnyupdate = { CompanyName, description, website, location }
+
+        if (CompanyName) {
+            const CompanyFindByName = await CompantData.findOne({ CompanyName });
+            if (CompanyFindByName) {
+                if (!(comapny?.CompanyName == CompanyFindByName?.CompanyName)) {
+                    return res.status(400).json({ message: "Company is already registered..." })
+                }
+            }
+        }
 
         if (!CompanyName) comapnyupdate.CompanyName = comapny?.CompanyName;
         if (!description) comapnyupdate.description = comapny?.description;
