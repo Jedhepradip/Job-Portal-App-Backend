@@ -50,7 +50,7 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
             FindUser.JobPost?.push(PostJobs.id)
             FindUser.save();
         }
-        return res.status(200).json({ message: "New Job created Successfully...", PostJobs })
+        return res.status(200).json({ message: "Jobs created Successfully...", PostJobs })
 
     } catch (error) {
         console.log(error);
