@@ -4,9 +4,9 @@ import { GetallJobinAdminCreated, GetAllJobs, GetAllJobsById, PostJobCompany } f
 
 const router = express.Router();
 
-router.post("/Admin/PostJobs",jwtAuthMiddleware, PostJobCompany);
-router.get("/GetJobs/ById/:id",jwtAuthMiddleware,GetAllJobsById)
-router.get("/GetAll/Jobs",jwtAuthMiddleware,GetAllJobs);
-router.get("/GetAll/Jobs/Admin",jwtAuthMiddleware,GetallJobinAdminCreated)
+router.post("/Admin/PostJobs/:id", jwtAuthMiddleware, PostJobCompany);
+router.get("/GetJobs/ById/:id", jwtAuthMiddleware, GetAllJobsById)
+router.get("/GetAll/Jobs", jwtAuthMiddleware, GetAllJobs);
+router.get("/GetAll/Jobs/Admin", jwtAuthMiddleware, GetallJobinAdminCreated)
 
 export default router;

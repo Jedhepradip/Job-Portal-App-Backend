@@ -10,6 +10,7 @@ interface JobData extends Document {
     position: number
     experienceLevel: number;
     JobPostDate: Date;
+    companyName: string,
     company?: mongoose.Types.ObjectId[];
     CreatedBy?: mongoose.Types.ObjectId[];
     applications?: mongoose.Types.ObjectId[];
@@ -51,6 +52,10 @@ const JOBSCHEMA: mongoose.Schema<JobData> = new mongoose.Schema({
     JobPostDate: {
         type: Date,
         default: Date.now
+    },
+    companyName: {
+        type: String,
+        required: true
     },
     company: {
         type: mongoose.Schema.Types.ObjectId,

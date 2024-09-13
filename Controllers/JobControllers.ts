@@ -12,9 +12,14 @@ interface CustomRequest extends Request {
 // Jobs Post Company admin
 export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     try {
-        const { title, description, requirements, salary, location, jobtype, position, experienceLevel, company } = req.body;
+        const { title, description, requirements, salary, location, jobtype, position, experienceLevel, companyName } = req.body;
 
-        if (!title || !description || !requirements || !salary || !location || !jobtype || !position || !experienceLevel || !company) {
+        console.log(req.body);
+
+        const CompanyId = req.params.id
+        console.log(CompanyId);
+
+        if (!title || !description || !requirements || !salary || !location || !jobtype || !position || !experienceLevel || !companyName) {
             return res.status(400).json({ message: "Something is missing..." })
         }
 
@@ -34,7 +39,8 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
             jobtype,
             position,
             experienceLevel,
-            company,
+            companyName,
+            company: CompanyId,
             CreatedBy: UserId,
         })
 
