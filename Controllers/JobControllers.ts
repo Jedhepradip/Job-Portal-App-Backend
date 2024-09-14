@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jobModel from "../Models/JobModel";
 import UserModel from "../Models/UserModel";
+import Company from "../Models/CompanyModel";
 
 interface CustomRequest extends Request {
     user?: {
@@ -14,20 +15,20 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     try {
         const { title, description, requirements, salary, location, jobtype, position, experienceLevel, companyName } = req.body;
 
-        console.log(req.body);
-
         const CompanyId = req.params.id
-        console.log(CompanyId);
+        const UserId = req.user?.id;
 
         if (!title || !description || !requirements || !salary || !location || !jobtype || !position || !experienceLevel || !companyName) {
             return res.status(400).json({ message: "Something is missing..." })
         }
 
-        const UserId = req.user?.id;
-
         let FindUser = await UserModel.findById(UserId)
         if (!FindUser) {
             return res.status(401).json({ message: "Authorization User..." })
+        }
+        let CompanyData = await Company.findById(CompanyId)
+        if (!CompanyData) {
+            return res.status(400).json({ message: "Company Not Found" })
         }
 
         const PostJobs = new jobModel({
@@ -46,10 +47,16 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
 
         await PostJobs.save()
 
+        if (CompanyData) {
+            CompanyData.JobsId?.push(PostJobs.id)
+            await CompanyData.save()
+        }
+
         if (FindUser) {
             FindUser.JobPost?.push(PostJobs.id)
-            FindUser.save();
+            await FindUser.save();
         }
+
         return res.status(200).json({ message: "Jobs created Successfully...", PostJobs })
 
     } catch (error) {
@@ -79,7 +86,7 @@ export const UpdateJobs = async (req: CustomRequest, res: Response) => {
 
         const UpdateJobs = await jobModel.findByIdAndUpdate(JobsId, reqBodyData, { new: true })
 
-        console.log(UpdateJobs);        
+        console.log(UpdateJobs);
 
         return res.status(200).json({ message: "Jobs updated Successfully" })
     } catch (error) {

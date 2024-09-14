@@ -1,13 +1,14 @@
-import mongoose,{Document} from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-interface Company extends Document{
-    CompanyLogo:string,
-    CompanyName:string,
-    description:string,
-    website:string,
-    location:string,
-    createdAt:Date,
-    UserId:object,
+interface Company extends Document {
+    CompanyLogo: string,
+    CompanyName: string,
+    description: string,
+    website: string,
+    location: string,
+    createdAt: Date,
+    JobsId?: mongoose.Types.ObjectId[],
+    UserId?: mongoose.Types.ObjectId[];
 }
 
 const CompanySchema: mongoose.Schema<Company> = new mongoose.Schema({
@@ -16,7 +17,7 @@ const CompanySchema: mongoose.Schema<Company> = new mongoose.Schema({
     },
     CompanyName: {
         type: String,
-        unique:true
+        unique: true
     },
     description: {
         type: String,
@@ -31,6 +32,12 @@ const CompanySchema: mongoose.Schema<Company> = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    JobsId: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "JOBSCHEMA"
+        }
+    ],
     UserId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
