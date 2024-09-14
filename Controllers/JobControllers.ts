@@ -79,7 +79,7 @@ export const UpdateJobs = async (req: CustomRequest, res: Response) => {
 
         const UpdateJobs = await jobModel.findByIdAndUpdate(JobsId, reqBodyData, { new: true })
 
-        console.log(UpdateJobs);Successfully        
+        console.log(UpdateJobs);        
 
         return res.status(200).json({ message: "Jobs updated Successfully" })
     } catch (error) {
