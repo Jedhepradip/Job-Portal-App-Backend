@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import CompantData from "../Models/CompanyModel";
+import CompanyData from "../Models/CompanyModel";
 import UserModel from "../Models/UserModel";
 
 interface CustomRequest extends Request {
@@ -18,7 +18,7 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
         }
         console.log(req.body);
 
-        const company = await CompantData.findOne({ CompanyName })
+        const company = await CompanyData.findOne({ CompanyName })
         if (company) {
             return res.status(400).json({ message: "You can't register same company..." })
         }
@@ -28,7 +28,7 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User Not Found..." })
         }
-        const Companystord = new CompantData({
+        const Companystord = new CompanyData({
             CompanyName,
             createdAt: Date.now(),
             UserId: LoginUserId,
@@ -63,7 +63,7 @@ export const getcompany = async (req: CustomRequest, res: Response) => {
             const companies = [];
             for (const CompanyId of user.Company) {
                 let Id = CompanyId.toHexString();
-                let CompanyFind = await CompantData.findById(Id);
+                let CompanyFind = await CompanyData.findById(Id);
                 if (CompanyFind) {
                     companies.push(CompanyFind);
                 }
@@ -81,7 +81,7 @@ export const getcompany = async (req: CustomRequest, res: Response) => {
 export const getCompanyById = async (req: Request, res: Response) => {
     try {
         const comapnyId = req.params.id
-        const comapny = await CompantData.findById(comapnyId)
+        const comapny = await CompanyData.findById(comapnyId)
         if (!comapny) {
             return res.status(404).json({ message: "Company Not Found" })
         }
@@ -92,41 +92,48 @@ export const getCompanyById = async (req: Request, res: Response) => {
     }
 }
 
-// Company update 
+
 export const CompanyUpdate = async (req: Request, res: Response) => {
     try {
-        let { CompanyName, description, website, location } = req.body
-
-        const CompanyLogo = req.file?.originalname; // Access file
-        console.log("CompanyLogo :", CompanyLogo);
-
-        const companyId = req.params.id
+        let { CompanyName, description, website, location } = req.body;
         console.log(req.body);
+        const companyId = req.params.id;
+        const company = await CompanyData.findById(companyId);
 
-        const comapny = await CompantData.findById(companyId)
-        const comapnyupdate = { CompanyName, description, website, location }
+        if (!company) {
+            return res.status(404).json({ message: "Company not found" });
+        }
+
+        const companyUpdate = { CompanyName, description, website, location };
 
         if (CompanyName) {
-            const CompanyFindByName = await CompantData.findOne({ CompanyName });
+            const CompanyFindByName = await CompanyData.findOne({ CompanyName });
             if (CompanyFindByName) {
-                if (!(comapny?.CompanyName == CompanyFindByName?.CompanyName)) {
-                    return res.status(400).json({ message: "Company is already registered..." })
+                if (company.CompanyName !== CompanyFindByName.CompanyName) {
+                    return res.status(400).json({ message: "Company is already registered..." });
                 }
             }
         }
 
-        if (!CompanyName) comapnyupdate.CompanyName = comapny?.CompanyName;
-        if (!description) comapnyupdate.description = comapny?.description;
-        if (!website) comapnyupdate.website = comapny?.website;
-        if (!location) comapnyupdate.location = comapny?.location;
+        if (req.file) {
+            company.CompanyLogo = req.file.originalname
+            await company.save();
+        } else {
+            company.CompanyLogo = company.CompanyLogo
+            await company.save()
+        }
 
-        const updatacomapny = await CompantData.findByIdAndUpdate(companyId, comapnyupdate, { new: true })
+        if (!CompanyName) companyUpdate.CompanyName = company.CompanyName;
+        if (!description) companyUpdate.description = company.description;
+        if (!website) companyUpdate.website = company.website;
+        if (!location) companyUpdate.location = company.location;
 
-        console.log(updatacomapny);
-        return res.status(200).json({ updatacomapny })
+        const updatedCompany = await CompanyData.findByIdAndUpdate(companyId, companyUpdate, { new: true });
+
+        return res.status(200).json({ updatedCompany });
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal Server Error..." })
+        return res.status(500).json({ message: "Internal Server Error..." });
     }
 }

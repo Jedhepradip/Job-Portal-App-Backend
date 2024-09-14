@@ -14,6 +14,7 @@ interface Company extends Document {
 const CompanySchema: mongoose.Schema<Company> = new mongoose.Schema({
     CompanyLogo: {
         type: String,
+        default:"CompanyLog"
     },
     CompanyName: {
         type: String,
