@@ -58,6 +58,24 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     }
 }
 
+//update Company
+export const UpdateJobs = async (req: CustomRequest, res: Response) => {
+    try {
+        const { title, description, requirements, salary, location, jobtype, position, experienceLevel, companyName } = req.body;
+
+        console.log(req.body);
+        
+        if (!title || !description || !requirements || !salary || !location || !jobtype || !position || !experienceLevel || !companyName) {
+            return res.status(400).json({ message: "Something is missing..." })
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.status(501).json({ message: "Internal Server Error" })
+
+    }
+}
+
 //Get Jobs ById
 export const GetAllJobsById = async (req: Request, res: Response) => {
     try {
@@ -122,3 +140,4 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
         return res.status(500).json({ message: "Internal Server Error..." })
     }
 }
+
