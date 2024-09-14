@@ -97,7 +97,7 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
     try {
         let { CompanyName, description, website, location } = req.body
 
-        const CompanyLogo = req.file; // Access file
+        const CompanyLogo = req.file?.originalname; // Access file
         console.log("CompanyLogo :", CompanyLogo);
 
         const companyId = req.params.id
