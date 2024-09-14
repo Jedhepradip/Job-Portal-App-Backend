@@ -96,9 +96,13 @@ export const getCompanyById = async (req: Request, res: Response) => {
 export const CompanyUpdate = async (req: Request, res: Response) => {
     try {
         let { CompanyName, description, website, location } = req.body
-        const CompanyLogo = req.file;
+
+        const CompanyLogo = req.file; // Access file
+        console.log("CompanyLogo :", CompanyLogo);
+
         const companyId = req.params.id
         console.log(req.body);
+
         const comapny = await CompantData.findById(companyId)
         const comapnyupdate = { CompanyName, description, website, location }
 
@@ -119,7 +123,6 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         const updatacomapny = await CompantData.findByIdAndUpdate(companyId, comapnyupdate, { new: true })
 
         console.log(updatacomapny);
-
         return res.status(200).json({ updatacomapny })
 
     } catch (error) {
