@@ -58,21 +58,33 @@ export const PostJobCompany = async (req: CustomRequest, res: Response) => {
     }
 }
 
-//update Company
 export const UpdateJobs = async (req: CustomRequest, res: Response) => {
     try {
-        const { title, description, requirements, salary, location, jobtype, position, experienceLevel, companyName } = req.body;
+        const { title, description, requirements, salary, location, jobtype, position, experienceLevel } = req.body;
+        const JobsId = req.params.id
+        const JobsFind = await jobModel.findById(JobsId)
 
-        console.log(req.body);
-        
-        if (!title || !description || !requirements || !salary || !location || !jobtype || !position || !experienceLevel || !companyName) {
-            return res.status(400).json({ message: "Something is missing..." })
+        const reqBodyData = req.body;
+
+        if (JobsFind) {
+            if (!title) reqBodyData.title = JobsFind.title;
+            if (!description) reqBodyData.description = JobsFind.description;
+            if (!requirements) reqBodyData.requirements = JobsFind.requirements;
+            if (!salary) reqBodyData.salary = JobsFind.salary;
+            if (!location) reqBodyData.location = JobsFind.location;
+            if (!jobtype) reqBodyData.jobtype = JobsFind.jobtype;
+            if (!position) reqBodyData.position = JobsFind.position;
+            if (!experienceLevel) reqBodyData.experienceLevel = JobsFind.experienceLevel;
         }
 
+        const UpdateJobs = await jobModel.findByIdAndUpdate(JobsId, reqBodyData, { new: true })
+
+        console.log(UpdateJobs);Successfully        
+
+        return res.status(200).json({ message: "Jobs updated Successfully" })
     } catch (error) {
         console.log(error);
-        return res.status(501).json({ message: "Internal Server Error" })
-
+        return res.status(501).json({ message: "Internal Server Error..." })
     }
 }
 
