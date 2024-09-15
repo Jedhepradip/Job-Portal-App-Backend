@@ -20,7 +20,6 @@ app.get("/", (req: Request, res: Response) => {
     res.send("hello hi")
 })
 
-
 app.use("/", indexrouter);
 app.use("/Company", CompanyRouter);
 app.use("/Jobs", JobRouter);
