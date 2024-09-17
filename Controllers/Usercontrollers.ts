@@ -105,6 +105,7 @@ export const UserLogin = async (req: Request, res: Response) => {
 export const UserInfomation = async (req: CustomRequest, res: Response) => {
     try {
         const UserId = req.user?.id;
+        
         const user = await UserData.findById(UserId);
 
         if (!user) {
