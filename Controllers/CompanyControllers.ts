@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CompanyData from "../Models/CompanyModel";
+import jobModel from "../Models/JobModel";
 import UserModel from "../Models/UserModel";
 
 interface CustomRequest extends Request {
@@ -111,6 +112,19 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
             if (CompanyFindByName) {
                 if (company.CompanyName !== CompanyFindByName.CompanyName) {
                     return res.status(400).json({ message: "Company is already registered..." });
+                }
+            }
+        }
+
+        if (CompanyName) {
+            const company = await CompanyData.findById(companyId);
+            if (company?.JobsId?.length) {
+                for (let i = 0; i < company.JobsId.length; i++) {
+                    const job = await jobModel.findById(company.JobsId[i].toHexString());
+                    if (job) {
+                        job.companyName = CompanyName;
+                        await job.save();
+                    }
                 }
             }
         }
