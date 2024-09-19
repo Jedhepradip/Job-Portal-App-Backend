@@ -12,7 +12,7 @@ export const jwtAuthMiddleware = (req: CustomRequest, res: Response, next: NextF
 
     // Check if the authorization header exists
     if (!authorization) {
-        return res.status(401).json({ message: "Authorization header missing" });
+        return res.status(401).json({ message: "Authorization headers missing" });
     }
 
     // Extract the token from the authorization header

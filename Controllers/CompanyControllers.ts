@@ -97,7 +97,6 @@ export const getCompanyById = async (req: Request, res: Response) => {
 export const CompanyUpdate = async (req: Request, res: Response) => {
     try {
         let { CompanyName, description, website, location } = req.body;
-        console.log(req.body);
         const companyId = req.params.id;
         const company = await CompanyData.findById(companyId);
 
@@ -129,6 +128,8 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
             }
         }
 
+        console.log(req.files);
+        
         if (req.file) {
             company.CompanyLogo = req.file.originalname
             await company.save();

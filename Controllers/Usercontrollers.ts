@@ -18,6 +18,12 @@ export const RegistrationUser = async (req: Request, res: Response) => {
 
         console.log(req.body);
 
+        console.log(req.file);
+
+        if (!req.file) {
+            return res.status(400).json({ message: "Profile Img Not Found" });
+        }
+
         if (!name || !email || !mobile || !password || !role) {
             return res.status(400).json({ message: "Something is missing..." })
         }
@@ -34,6 +40,7 @@ export const RegistrationUser = async (req: Request, res: Response) => {
 
         const haspassword = await bcrypt.hash(password, 11)
         const User = new UserData({
+            ProfileImg: req.file?.originalname,
             name,
             email,
             mobile,
@@ -105,7 +112,7 @@ export const UserLogin = async (req: Request, res: Response) => {
 export const UserInfomation = async (req: CustomRequest, res: Response) => {
     try {
         const UserId = req.user?.id;
-        
+
         const user = await UserData.findById(UserId);
 
         if (!user) {
@@ -128,13 +135,13 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
 
         const reqbody = req.body;
 
+        console.log("req.file ",req.file);        
+
         // Find the user by their ID
         const user = await UserData.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-
-        console.log(skills.split(","));
         reqbody.skills = skills.split(",")
 
         if (email) {
@@ -155,11 +162,13 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
             }
         }
 
+        if (req.file) {
+            reqbody.ResumeFile = req.file.originalname; // or whatever property you want to store
+          }
+        
         const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {
             new: true
         })
-
-        console.log("updatedUser :", updatedUser);
 
         return res.status(200).json({ message: "Profile updated successfully", updatedUser });
 

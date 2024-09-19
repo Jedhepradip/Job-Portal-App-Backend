@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jobModel from "../Models/JobModel";
 import Applicationcom from "../Models/ApplicationMode";
+import UserModel from "../Models/UserModel";
 interface CustomRequest extends Request {
     user?: {
         id: string;  // Define the specific type you expect for 'user.id'
@@ -15,19 +16,31 @@ export const ApplyJobs = async (req: CustomRequest, res: Response) => {
         const JobId = req.params.id
         const jobs = await jobModel.findById(JobId)
 
+        const user = await UserModel.findById(UserId)
+
+        console.log(user);
+
+        if (user?.ResumeFile === "" || !user?.skills?.length || user?.bio === "") {
+            return res.status(400).json({ message: "Resume File, Skills, and Bio are required." });
+        }
+
         if (!jobs) return res.status(404).json({ message: "Jobs Not Found...!" })
-        
+
         const ApplicationUser = new Applicationcom({
             job: JobId,
             applicant: UserId
         })
 
-        await ApplicationUser.save()
+        const applyjobs = await ApplicationUser.save()
         if (jobs) {
             jobs.applications?.push(ApplicationUser.id); // Push the ObjectId to the Company array
             await jobs.save(); // Don't forget to save the document after modification
         }
-        return res.status(200).json({ message: "Job applied successfully..." })
+
+        console.log(applyjobs);
+
+        return res.status(200).json({ message: "Job applied successfully...", applyjobs })
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server Error...!" })
@@ -92,10 +105,10 @@ export const UpdataStatus = async (req: Request, res: Response) => {
         }
 
         Applciationfind.status = status.toLowerCase();
-        
+
         await Applciationfind.save()
 
-        return res.status(200).json({message:"Status Updata Successfully...!"})
+        return res.status(200).json({ message: "Status Updata Successfully...!" })
 
     } catch (error) {
         console.log(error);
