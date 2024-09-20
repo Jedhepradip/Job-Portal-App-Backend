@@ -20,7 +20,12 @@ export const ApplyJobs = async (req: CustomRequest, res: Response) => {
 
         console.log(user);
 
-        if (user?.ResumeFile === "" || !user?.skills?.length || user?.bio === "") {
+        if (
+            !user?.ResumeFile ||
+            user?.ResumeFile === "null" ||
+            !user?.skills?.length ||
+            !user?.bio
+        ) {
             return res.status(400).json({ message: "Resume File, Skills, and Bio are required." });
         }
 
@@ -71,25 +76,29 @@ export const getappliedJobs = async (req: CustomRequest, res: Response) => {
 // kiti user ni job ver apply kela aahe the show hoil admin la 
 export const GetApplicantsJobs = async (req: Request, res: Response) => {
     try {
-        const JobsId = req.params.id
+        const JobsId = req.params.id;
+
+        // Fetch the job by ID and populate applications with applicants
         const jobs = await jobModel.findById(JobsId).populate({
-            path: "applicant",
-            // populate: ({
-            //     path: "applicant" //User Applied
-            // })
-        })
+            path: "applications",
+            populate: {
+                path: "applicant", // Populate the applicant (user who applied)  
+            },
+        });
+
+        console.log(jobs);
 
         if (!jobs) {
-            return res.status(400).json({ message: "Job Not Found...!" })
+            return res.status(400).json({ message: "Job Not Found...!" });
         }
 
-        return res.status(200).json(jobs)
+        return res.status(200).json(jobs);
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal Server Error...!" })
+        return res.status(500).json({ message: "Internal Server Error...!" });
     }
-}
+};
 
 //updata Statu//s 
 export const UpdataStatus = async (req: Request, res: Response) => {

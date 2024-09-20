@@ -95,21 +95,6 @@ export const UpdateJobs = async (req: CustomRequest, res: Response) => {
     }
 }
 
-//Get Jobs ById
-export const GetAllJobsById = async (req: Request, res: Response) => {
-    try {
-        const JobsId = req.params.id;
-        const Jobs = await jobModel.findById(JobsId);
-        if (!Jobs) {
-            return res.status(404).json({ message: "Jons Not Found...!" })
-        }
-        return res.status(200).json(Jobs)
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "internal Server Error...!" })
-    }
-}
-
 // Get All Jobs student
 export const GetAllJobs = async (req: Request, res: Response) => {
     try {
@@ -150,9 +135,11 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
                     Jobs.push(JobsFind);
                 }
             }
-            return res.status(200).json({ message: "Fetch successfully...", user });
+            console.log(Jobs);
+
+            return res.status(200).json( Jobs );
         }
-        return res.status(404).json({ message: "No companies found for the user." });
+        // return res.status(404).json({ message: "No companies found for the user." });
 
     } catch (error) {
         console.log(error);
