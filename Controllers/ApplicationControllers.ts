@@ -86,8 +86,6 @@ export const GetApplicantsJobs = async (req: Request, res: Response) => {
             },
         });
 
-        console.log(jobs);
-
         if (!jobs) {
             return res.status(400).json({ message: "Job Not Found...!" });
         }
@@ -105,10 +103,15 @@ export const UpdataStatus = async (req: Request, res: Response) => {
     try {
         const { status } = req.body;
         const applicationId = req.params.id;
+        console.log(applicationId);
+
+        console.log(req.body);
         if (!status) {
             return res.status(401).json({ message: "Something is missing..." })
         }
-        const Applciationfind = await Applicationcom.findOne({ _id: applicationId });
+
+        const Applciationfind = await Applicationcom.findById(applicationId);
+
         if (!Applciationfind) {
             return res.status(404).json({ message: "Application Not Found...!" })
         }
@@ -117,7 +120,7 @@ export const UpdataStatus = async (req: Request, res: Response) => {
 
         await Applciationfind.save()
 
-        return res.status(200).json({ message: "Status Updata Successfully...!" })
+        return res.status(200).json({ message: `User ${status} Successfully...!` })
 
     } catch (error) {
         console.log(error);

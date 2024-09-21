@@ -128,7 +128,7 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
             }
         }
 
-        console.log(req.files);
+        console.log(req.file);
         
         if (req.file) {
             company.CompanyLogo = req.file.originalname
