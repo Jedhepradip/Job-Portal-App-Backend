@@ -8,15 +8,11 @@ const router = express.Router();
 router.post("/User/Registration", upload.single("ProfileImg"), RegistrationUser);
 router.post("/User/login", UserLogin)
 router.get("/User/Information", jwtAuthMiddleware, UserInfomation)
-// router.put("/User/Update/Profile", jwtAuthMiddleware, upload.single("ResumeFile"), UserProfileUpdate)
-
-router.put("/User/Update/Profile",
-    jwtAuthMiddleware, // Middleware for authentication
-    upload.fields([
-        { name: 'ResumeFile', maxCount: 1 }, // Upload resume file
-        { name: 'ProfileImg', maxCount: 1 }  // Upload profile image
+router.put("/User/Update/Profile", jwtAuthMiddleware,
+    upload.fields([{ name: 'ResumeFile', maxCount: 1 },
+    { name: 'ProfileImg', maxCount: 1 }
     ]),
-    UserProfileUpdate // Controller function to handle the update
+    UserProfileUpdate
 );
 
 export default router

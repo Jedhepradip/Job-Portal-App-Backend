@@ -81,17 +81,19 @@ export const RegistrationUser = async (req: Request, res: Response) => {
 export const UserLogin = async (req: Request, res: Response) => {
     try {
         const { email, password, role } = req.body;
-        let Useremail = await UserData.findOne({ email })
+        let Useremail: any = await UserData.findOne({ email })
+
         if (!Useremail) {
             return res.status(404).json({ message: "User not Found..." })
         }
 
         let machpassword = await bcrypt.compare(password, Useremail.password)
+
         if (!machpassword) {
             return res.status(400).json({ message: "Incorrect Password try again..." })
         }
 
-        if (role !== Useremail.role) {
+        if (role !== Useremail?.role) {
             return res.status(400).json({ message: "Account doesn't exist with current role..." })
         }
 
@@ -135,7 +137,6 @@ export const UserInfomation = async (req: CustomRequest, res: Response) => {
     }
 }
 
-
 export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
     try {
         const { name, email, mobile, bio, skills } = req.body;
@@ -145,6 +146,7 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+
         reqbody.skills = skills.split(",")
 
         if (email) {
@@ -170,14 +172,15 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
         }
 
         if (req.files && (req.files as Files).ResumeFile) {
-            reqbody.ResumeFile = (req.files as Files)?.ResumeFile[0].originalname; // Or use 'path' or other properties
+            reqbody.ResumeFile = (req.files as Files)?.ResumeFile[0].originalname; // Or use 'path' or other properties            
+        } else {
+            reqbody.ResumeFile = user?.ResumeFile
         }
 
-
         if (req.files && (req.files as Files).ProfileImg) {
-            console.log("img", req.files);
-
             reqbody.ProfileImg = (req.files as Files)?.ProfileImg[0].originalname;
+        } else {
+            reqbody.ProfileImg = user?.ProfileImg
         }
 
         const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {
