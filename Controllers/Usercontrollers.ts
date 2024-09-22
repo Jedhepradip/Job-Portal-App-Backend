@@ -3,6 +3,14 @@ import UserData from "../Models/UserModel";
 import bcrypt from "bcrypt"
 import { generateToken } from "../Middewares/generateToken";
 
+interface MulterFile {
+    originalname: string;
+    path: string;
+    filename: string;
+    mimetype: string;
+    size: number;
+    // Add other properties from Multer's File type if necessary
+}
 
 interface CustomRequest extends Request {
     user?: {
@@ -132,12 +140,7 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
     try {
         const { name, email, mobile, bio, skills } = req.body;
         const userId = req.user?.id;
-
         const reqbody = req.body;
-
-        console.log("req.file ",req.file);        
-
-        // Find the user by their ID
         const user = await UserData.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -162,10 +165,21 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
             }
         }
 
-        if (req.file) {
-            reqbody.ResumeFile = req.file.originalname; // or whatever property you want to store
-          }
-        
+        type Files = {
+            [fieldname: string]: MulterFile[];
+        }
+
+        if (req.files && (req.files as Files).ResumeFile) {
+            reqbody.ResumeFile = (req.files as Files)?.ResumeFile[0].originalname; // Or use 'path' or other properties
+        }
+
+
+        if (req.files && (req.files as Files).ProfileImg) {
+            console.log("img", req.files);
+
+            reqbody.ProfileImg = (req.files as Files)?.ProfileImg[0].originalname;
+        }
+
         const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {
             new: true
         })
