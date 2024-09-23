@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import UserModel from "../Models/UserModel";
 import nodemailer from "nodemailer";
+import bcrypt from "bcrypt"
 
 export const ForgetPassword = async (req: Request, res: Response) => {
     try {
@@ -63,3 +64,29 @@ export const ForgetPassword = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+
+export const setUpNewPassword = async (req: Request, res: Response) => {
+    try {
+        const { password } = req.body;
+        const UserId = req.params.id;
+        const user = await UserModel.findById(UserId)
+        if (!password) {
+            return res.status(400).json({ message: "Something is missing..." })
+        }
+        if (!user) {
+            return res.status(400).json({ message: "User not Found" })
+        }
+
+        const hashpassword: = await bcrypt.hash(password, 11)
+
+        const userupdated = await UserModel.findByIdAndUpdate(UserId, hashpassword, { new: true }).select("password");
+        console.log(userupdated);
+        return res.status(200).json({ message: "User Updated Password..." })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" })
+
+    }
+}
