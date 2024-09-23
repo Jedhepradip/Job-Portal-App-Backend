@@ -70,6 +70,8 @@ export const setUpNewPassword = async (req: Request, res: Response) => {
     try {
         const { password } = req.body;
         const UserId = req.params.id;
+        console.log(req.body);
+
         const user = await UserModel.findById(UserId)
         if (!password) {
             return res.status(400).json({ message: "Something is missing..." })
@@ -78,10 +80,11 @@ export const setUpNewPassword = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "User not Found" })
         }
 
-        const hashpassword: = await bcrypt.hash(password, 11)
+        const hashpassword: any = await bcrypt.hash(password, 11)
 
         const userupdated = await UserModel.findByIdAndUpdate(UserId, hashpassword, { new: true }).select("password");
         console.log(userupdated);
+        await user.save();
         return res.status(200).json({ message: "User Updated Password..." })
 
     } catch (error) {
