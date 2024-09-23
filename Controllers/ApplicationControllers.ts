@@ -292,7 +292,7 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
                 text: "Hello world?", // Fallback text if HTML is not supported
                 html: `
                 <div style="font-family: Arial, sans-serif; color: #333;">
-                    <h2 style="color: black; font-family: serif; ">💔 We're Sorry, ${user?.name}</h2>
+                    <h2 style="color: black; font-family: serif; "> We're Sorry, ${user?.name}</h2>
                     <p style="font-size: 18px; color: #black;">
                         Unfortunately, after careful consideration, your application for the <strong>${jobs.title}</strong> position at <strong>${jobs.companyName}</strong> has been <span style="color: black;">rejected</span>.
                     </p>

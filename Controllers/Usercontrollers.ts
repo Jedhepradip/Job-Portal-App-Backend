@@ -110,7 +110,7 @@ export const UserLogin = async (req: Request, res: Response) => {
         }
 
         const token = generateToken(JSON.stringify(payload))
-        return res.status(200).json({ messge: "User login successfully...", token })
+        return res.status(200).json({ message: "User login successfully...", token })
 
     } catch (error) {
         console.log(error);
