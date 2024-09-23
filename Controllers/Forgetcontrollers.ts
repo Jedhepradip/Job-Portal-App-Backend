@@ -65,31 +65,38 @@ export const ForgetPassword = async (req: Request, res: Response) => {
     }
 };
 
-
 export const setUpNewPassword = async (req: Request, res: Response) => {
     try {
         const { password } = req.body;
-        const UserId = req.params.id;
-        console.log(req.body);
+        const userId = req.params.id;
 
-        const user = await UserModel.findById(UserId)
         if (!password) {
-            return res.status(400).json({ message: "Something is missing..." })
+            return res.status(400).json({ message: "Password is missing." });
         }
+
+        const user = await UserModel.findById(userId);
         if (!user) {
-            return res.status(400).json({ message: "User not Found" })
+            return res.status(404).json({ message: "User not found." });
         }
 
-        const hashpassword: any = await bcrypt.hash(password, 11)
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, 11);
 
-        const userupdated = await UserModel.findByIdAndUpdate(UserId, hashpassword, { new: true }).select("password");
-        console.log(userupdated);
-        await user.save();
-        return res.status(200).json({ message: "User Updated Password..." })
+        // Update the user's password
+        const userUpdated = await UserModel.findByIdAndUpdate(
+            userId,
+            { password: hashedPassword },  // Updating password
+            { new: true, select: 'password' } // Return the updated document
+        );
+
+        if (!userUpdated) {
+            return res.status(400).json({ message: "Failed to update password." });
+        }
+
+        return res.status(200).json({ message: "Password updated successfully." });
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" })
-
+        console.error("Error updating password:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};
