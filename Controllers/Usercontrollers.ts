@@ -21,40 +21,70 @@ interface CustomRequest extends Request {
     };
 }
 
-export const UserSendOtp = async (req: Request, res: Response) => {
+export const sendLoginOtp = async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({ message: "Something is missing" })
-        }
-        const user = await UserModel.findOne({ email })
-        if (!user) {
-            return res.status(400).json({ message: "User Not Found" })
-        }
+
+        // Check if the user exists in the database
+        const user = await UserModel.findOne({ email });
 
         if (user) {
-            const transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com', // Use the SMTP host directly
-                secure: true,
-                port: Number(process.env.NODEMAILER_PORT) || 465, // 465 for secure SMTP
-                auth: {
-                    user: process.env.USER,
-                    pass: process.env.PASS
-                },
-                logger: true, // log to console
-                debug: true,
-            });
-
-            const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
-
-
+            return res.status(400).json({ message: "User already exist with this email..." })
         }
 
+        // Generate a 4-digit OTP
+        const otp = Math.floor(1000 + Math.random() * 9000);
+
+        // Set up the email transporter
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            secure: true,
+            port: Number(process.env.NODEMAILER_PORT) || 465,
+            auth: {
+                user: process.env.USER,
+                pass: process.env.PASS,
+            },
+        });
+
+        // Send OTP email
+        const info = await transporter.sendMail({
+            from: process.env.FROM,
+            to: "pradipjedhe69@gmail.com", // Send the email to the user
+            subject: "Sign In Confirmation & OTP Verification", // Subject line
+            text: `Your OTP is ${otp}`, // Fallback text
+            html: `
+               <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                <h2 style="color: black; text-aling:center;">Hello Confirmation & OTP Verification </h2>
+                <p>We noticed a successful sign-in to your account from a new device or location. For your security, we require additional verification before you can continue.</p>
+                
+                <p>Please use the following One-Time Password (OTP) to verify your identity:</p>
+                <div style="background-color: #f4f4f4; padding: 10px 20px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; text-align: center; max-width: 200px; margin: auto;">
+                    ${otp}
+                </div>
+                
+                <p style="margin-top: 20px;">The OTP is valid for the next 10 minutes. If you did not request this verification, please ignore this email or contact our support team immediately.</p>
+                
+                <h3 style="margin-top: 30px; color: #333;">Sign In Details:</h3>
+                <div style="background-color: #f9f9f9; padding: 10px; border-radius: 5px;">
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> ${new Date().toLocaleTimeString()}</p>
+                </div>
+                
+                <p style="margin-top: 30px;">Thank you for using our service. We are committed to keeping your account secure.</p>
+                
+                <p>Best regards, <br/> The Support Team</p>
+                
+                <p style="font-size: 12px; color: #888; margin-top: 20px;">If you did not sign in or request this OTP, please contact us immediately at support@yourcompany.com.</p>
+            </div>
+            `,
+        });
+        return res.status(200).json({ message: "OTP sent successfully...", otp });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal server Error" })
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};
+
 
 //User Registration
 export const RegistrationUser = async (req: Request, res: Response) => {
