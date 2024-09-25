@@ -247,7 +247,6 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
         } else {
             reqbody.ProfileImg = user?.ProfileImg
             console.log("mot Updated");
-
         }
 
         const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {
