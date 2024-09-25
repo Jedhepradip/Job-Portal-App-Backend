@@ -2,6 +2,8 @@ import { Response, Request } from "express"
 import UserData from "../Models/UserModel";
 import bcrypt from "bcrypt"
 import { generateToken } from "../Middewares/generateToken";
+import UserModel from "../Models/UserModel";
+import nodemailer from "nodemailer"
 
 interface MulterFile {
     originalname: string;
@@ -19,14 +21,45 @@ interface CustomRequest extends Request {
     };
 }
 
+export const UserSendOtp = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Something is missing" })
+        }
+        const user = await UserModel.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ message: "User Not Found" })
+        }
+
+        if (user) {
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com', // Use the SMTP host directly
+                secure: true,
+                port: Number(process.env.NODEMAILER_PORT) || 465, // 465 for secure SMTP
+                auth: {
+                    user: process.env.USER,
+                    pass: process.env.PASS
+                },
+                logger: true, // log to console
+                debug: true,
+            });
+
+            const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+
+
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server Error" })
+    }
+}
+
 //User Registration
 export const RegistrationUser = async (req: Request, res: Response) => {
     try {
         const { name, email, mobile, password, role } = req.body
-
-        console.log(req.body);
-
-        console.log(req.file);
 
         if (!req.file) {
             return res.status(400).json({ message: "Profile Img Not Found" });
@@ -179,8 +212,12 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
 
         if (req.files && (req.files as Files).ProfileImg) {
             reqbody.ProfileImg = (req.files as Files)?.ProfileImg[0].originalname;
+            console.log("Updated");
+
         } else {
             reqbody.ProfileImg = user?.ProfileImg
+            console.log("mot Updated");
+
         }
 
         const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {

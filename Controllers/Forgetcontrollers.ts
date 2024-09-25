@@ -6,36 +6,39 @@ import bcrypt from "bcrypt"
 export const ForgetPassword = async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
-        const user = await UserModel.findOne(email); // Fixing email search        
+
+        // Fixing email search by passing the search condition as an object
+        const user = await UserModel.findOne({ email });
 
         if (!user) {
             return res.status(400).json({ message: "User not Found" });
         }
 
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            secure: true,
-            port: Number(process.env.NODEMAILER_PORT) || 465,
-            auth: {
-                user: process.env.USER,
-                pass: process.env.PASS,
-            },
-        });
+        if (user) {
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                secure: true,
+                port: Number(process.env.NODEMAILER_PORT) || 465,
+                auth: {
+                    user: process.env.USER,
+                    pass: process.env.PASS,
+                },
+            });
 
-        const generateOTP = () => {
-            return Math.floor(1000 + Math.random() * 9000);
-        };
+            const generateOTP = () => {
+                return Math.floor(1000 + Math.random() * 9000);
+            };
 
-        const otp = generateOTP();
+            const otp = generateOTP();
 
-        // Enhanced HTML for OTP
-        const info = await transporter.sendMail({
-            from: process.env.FROM,
-            to: user.email, // Email sent to the user
-            subject: "Password Reset Request",
-            text: `Your OTP is: ${otp}`, // Fallback text
-            html: `
-            <div style="font-family: Arial, sans-serif; color: #333; padding-left: 20px; padding-right:20px; padding-button:20px; padding-top:0px;">
+            // Enhanced HTML for OTP
+            const info = await transporter.sendMail({
+                from: process.env.FROM,
+                to: user.email, // Corrected to send the email to the user's email
+                subject: "Password Reset Request",
+                text: `Your OTP is: ${otp}`,
+                html: `
+            <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
                 <h2 style="color: black;">Reset Your Password</h2>
                 <p>Hi ${user.name},</p>
                 <p>We received a request to reset your password. Please use the One-Time Password (OTP) below to proceed:</p>
@@ -56,14 +59,17 @@ export const ForgetPassword = async (req: Request, res: Response) => {
                 </footer>
             </div>
             `,
-        });
+            });
+            console.log(info.response);
+            return res.status(200).json({ message: "OTP sent successfully..." });
+        }
 
-        return res.status(200).json({ message: "OTP sent successfully...", user, otp });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
 
 export const setUpNewPassword = async (req: Request, res: Response) => {
     try {

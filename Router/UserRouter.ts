@@ -1,5 +1,5 @@
 import express from "express";
-import { RegistrationUser, UserLogin, UserProfileUpdate, UserInfomation } from "../Controllers/Usercontrollers";
+import { RegistrationUser, UserLogin, UserProfileUpdate, UserInfomation, UserSendOtp } from "../Controllers/Usercontrollers";
 import { jwtAuthMiddleware } from "../Middewares/jwtAuthMiddleware";
 import { upload } from "../Middewares/Multer middleware";
 
@@ -14,5 +14,6 @@ router.put("/User/Update/Profile", jwtAuthMiddleware,
     ]),
     UserProfileUpdate
 );
+router.post("/UserSendOtp", UserSendOtp)
 
 export default router
