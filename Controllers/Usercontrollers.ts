@@ -78,7 +78,7 @@ export const sendLoginOtp = async (req: Request, res: Response) => {
             </div>
             `,
         });
-        return res.status(200).json({ message: "OTP sent successfully...", otp });
+        return res.status(200).json({ message: "OTP sent successfully Check Your Email... ", otp });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal Server Error" });

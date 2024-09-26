@@ -129,7 +129,7 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         }
 
         console.log(req.file);
-        
+
         if (req.file) {
             company.CompanyLogo = req.file.originalname
             await company.save();
@@ -145,7 +145,8 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
 
         const updatedCompany = await CompanyData.findByIdAndUpdate(companyId, companyUpdate, { new: true });
 
-        return res.status(200).json({ updatedCompany });
+            return res.status(200).json({ updatedCompany });
+        
 
     } catch (error) {
         console.log(error);

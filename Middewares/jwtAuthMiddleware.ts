@@ -31,7 +31,7 @@ export const jwtAuthMiddleware = (req: CustomRequest, res: Response, next: NextF
         // Pass control to the next middleware or route handler
         next();
     } catch (error) {
-        console.log("JWT verification error:", error);
+        // console.log("JWT verification error:", error);
         // Respond with a 401 status code for invalid token
         return res.status(401).json({ message: "Invalid token" });
     }
