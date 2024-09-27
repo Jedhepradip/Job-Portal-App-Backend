@@ -151,14 +151,23 @@ export const SaveJobs = async (req: CustomRequest, res: Response) => {
         const JobsId = req.params?.id
         const UserId = req.user?.id
         const jobs = await jobModel.findById(JobsId)
-        if (!jobs) return res.status(400).json({ message: "Jobs Not Found..." })
+        if (!jobs) { return res.status(400).json({ message: "Jobs Not Found..." }) }
         const user = await UserModel.findById(UserId)
-        if (!user) return res.status(400).json({ message: "User not Found..." })
+        if (!user) { return res.status(400).json({ message: "User not Found..." }) }
 
         if (user) {
-            // user.SaveJobs?.push(JobsId)
+            if (user.SaveJobs?.length) {
+                user.SaveJobs.filter((e) => {
+                    if (e._id.toHexString() == jobs._id.toHexString()) {
+                        return res.status(400).json({ message: "Jobs Save Already..." });
+                    }
+                });
+            }
+            user.SaveJobs?.push(jobs._id)
+            await user.save();
         }
 
+        return res.status(200).json({ message: "Job Save successfully" })
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" })

@@ -10,7 +10,7 @@ interface UserData extends Document {
     role: string;
     Company?: mongoose.Types.ObjectId[];
     JobPost?: mongoose.Types.ObjectId[];
-    SaveJobs?: mongoose.Types.ObjectId[]
+    SaveJobs?:mongoose.Types.ObjectId[];
     bio?: string;
     skills?: string;
     ResumeFile?: string;

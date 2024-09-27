@@ -5,7 +5,7 @@ import { GetallJobinAdminCreated, GetAllJobs, PostJobCompany, UpdateJobs,SaveJob
 const router = express.Router();
 
 router.post("/Admin/PostJobs/:id", jwtAuthMiddleware, PostJobCompany);
-router.post("/Jobs/Save/User/:id",jwtAuthMiddleware,SaveJobs)
+router.put("/Jobs/Save/User/:id",jwtAuthMiddleware,SaveJobs)
 router.put("/Admin/Jobs/Update/:id", jwtAuthMiddleware, UpdateJobs)
 router.get("/GetAll/Jobs", GetAllJobs);
 router.get("/GetAll/Jobs/Admin",jwtAuthMiddleware, GetallJobinAdminCreated)
