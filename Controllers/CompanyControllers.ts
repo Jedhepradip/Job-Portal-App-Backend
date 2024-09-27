@@ -17,7 +17,6 @@ export const registerCompany = async (req: CustomRequest, res: Response) => {
         if (!CompanyName) {
             return res.status(400).json({ message: "Something is missing..." })
         }
-        console.log(req.body);
 
         const company = await CompanyData.findOne({ CompanyName })
         if (company) {
@@ -78,22 +77,6 @@ export const getcompany = async (req: CustomRequest, res: Response) => {
     }
 };
 
-//get company by id to 
-export const getCompanyById = async (req: Request, res: Response) => {
-    try {
-        const comapnyId = req.params.id
-        const comapny = await CompanyData.findById(comapnyId)
-        if (!comapny) {
-            return res.status(404).json({ message: "Company Not Found" })
-        }
-        return res.status(200).json(comapny)
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal Server Error..." })
-    }
-}
-
-
 export const CompanyUpdate = async (req: Request, res: Response) => {
     try {
         let { CompanyName, description, website, location } = req.body;
@@ -128,8 +111,6 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
             }
         }
 
-        console.log(req.file);
-
         if (req.file) {
             company.CompanyLogo = req.file.originalname
             await company.save();
@@ -144,10 +125,7 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         if (!location) companyUpdate.location = company.location;
 
         const updatedCompany = await CompanyData.findByIdAndUpdate(companyId, companyUpdate, { new: true });
-
-            return res.status(200).json({ updatedCompany });
-        
-
+        return res.status(200).json({ updatedCompany });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error..." });

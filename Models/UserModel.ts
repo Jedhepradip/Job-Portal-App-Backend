@@ -9,7 +9,8 @@ interface UserData extends Document {
     password: string;
     role: string;
     Company?: mongoose.Types.ObjectId[];
-    JobPost?:mongoose.Types.ObjectId[];
+    JobPost?: mongoose.Types.ObjectId[];
+    SaveJobs?: mongoose.Types.ObjectId[]
     bio?: string;
     skills?: string;
     ResumeFile?: string;
@@ -45,14 +46,14 @@ const UserSchema: mongoose.Schema<UserData> = new mongoose.Schema({
     },
     bio: {
         type: String,
-        default:""
+        default: ""
     },
     skills: {
         type: [String],  // Use an array of strings if multiple skills are stored             
     },
     ResumeFile: {
         type: String,
-        default:"",        
+        default: "",
     },
     Company: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -61,7 +62,11 @@ const UserSchema: mongoose.Schema<UserData> = new mongoose.Schema({
     JobPost: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "JOBSCHEMA",
-    }]
+    }],
+    SaveJobs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "JOBSCHEMA",
+    }],
 
 }, { timestamps: true });
 

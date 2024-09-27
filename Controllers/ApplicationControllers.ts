@@ -51,7 +51,7 @@ export const ApplyJobs = async (req: CustomRequest, res: Response) => {
 
             const info = await transporter.sendMail({
                 from: process.env.FROM,
-                to: "pradipjedhe69@gmail.com", // Email sent to the user
+                to: user.email, // Email sent to the user
                 subject: `Your Application for ${jobs.title} at ${jobs.companyName}`, // Subject with job title and company name
                 text: "Hello world?", // Fallback text if HTML is not supported
                 html: `
@@ -110,10 +110,6 @@ export const ApplyJobs = async (req: CustomRequest, res: Response) => {
                 `,
             });
 
-            console.log("Email sent successfully!");
-
-            // main().catch(console.error);
-
             return res.status(200).json({
                 message: "Job applied successfully...",
                 applyjobs
@@ -139,7 +135,6 @@ export const getappliedJobs = async (req: CustomRequest, res: Response) => {
         if (!ApplicationJobs) {
             return res.status(404).json({ message: "No Applications...!" })
         }
-
         return res.status(200).json(ApplicationJobs)
     } catch (error) {
         console.log(error);
@@ -151,7 +146,6 @@ export const getappliedJobs = async (req: CustomRequest, res: Response) => {
 export const GetApplicantsJobs = async (req: Request, res: Response) => {
     try {
         const JobsId = req.params.id;
-
         // Fetch the job by ID and populate applications with applicants
         const jobs = await jobModel.findById(JobsId).populate({
             path: "applications",
@@ -163,9 +157,7 @@ export const GetApplicantsJobs = async (req: Request, res: Response) => {
         if (!jobs) {
             return res.status(400).json({ message: "Job Not Found...!" });
         }
-
         return res.status(200).json(jobs);
-
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error...!" });
@@ -177,12 +169,10 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
     try {
         const { status } = req.body;
         const applicationId = req.params.id;
-        const userid = await UserModel.findById(req.user?.id)
 
-        console.log(req.body);
         if (!status) {
             return res.status(401).json({ message: "Something is missing..." })
-        }
+        }       
 
         const Applciationfind = await Applicationcom.findById(applicationId);
 
@@ -215,7 +205,7 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
 
             const info = await transporter.sendMail({
                 from: process.env.FROM,
-                to: "pradipjedhe69@gmail.com", // Email sent to the user
+                to: user.email, // Email sent to the user
                 subject: `Application Submitted for ${jobs.title} at ${jobs.companyName}`, // Subject with job title and company name
                 text: "Hello world?", // Fallback text if HTML is not supported
                 html: `
@@ -268,8 +258,6 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
                 `,
             });
 
-            console.log("Email sent successfully!");
-
             return res.status(200).json({ message: `User ${status} Successfully...!` })
         }
         if (Applciationfind.status == "rejected") {
@@ -287,7 +275,7 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
 
             const info = await transporter.sendMail({
                 from: process.env.FROM,
-                to: "pradipjedhe69@gmail.com", // Email sent to the user
+                to: user.email, // Email sent to the user
                 subject: `Update on Your Application for ${jobs.title} at ${jobs.companyName}`, // Subject with job title and company name
                 text: "Hello world?", // Fallback text if HTML is not supported
                 html: `

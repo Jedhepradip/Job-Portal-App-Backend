@@ -137,9 +137,8 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
             }
             console.log(Jobs);
 
-            return res.status(200).json( Jobs );
-        }
-        // return res.status(404).json({ message: "No companies found for the user." });
+            return res.status(200).json(Jobs);
+        };
 
     } catch (error) {
         console.log(error);
@@ -147,3 +146,21 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
     }
 }
 
+export const SaveJobs = async (req: CustomRequest, res: Response) => {
+    try {
+        const JobsId = req.params?.id
+        const UserId = req.user?.id
+        const jobs = await jobModel.findById(JobsId)
+        if (!jobs) return res.status(400).json({ message: "Jobs Not Found..." })
+        const user = await UserModel.findById(UserId)
+        if (!user) return res.status(400).json({ message: "User not Found..." })
+
+        if (user) {
+            // user.SaveJobs?.push(JobsId)
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" })
+    }
+}

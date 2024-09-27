@@ -30,14 +30,10 @@ interface CustomRequest extends Request {
 export const sendLoginOtp = async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
-
-        // Check if the user exists in the database
-        const user = await UserModel.findOne({ email });
-
+        const user = await UserModel.findOne({ email: email });
         if (user) {
             return res.status(400).json({ message: "User already exist with this email..." })
         }
-
         // Generate a 4-digit OTP
         const otp = Math.floor(1000 + Math.random() * 9000);
 
@@ -55,7 +51,7 @@ export const sendLoginOtp = async (req: Request, res: Response) => {
         // Send OTP email
         const info = await transporter.sendMail({
             from: process.env.FROM,
-            to: "pradipjedhe69@gmail.com", // Send the email to the user
+            to: email, // Send the email to the user
             subject: "Sign In Confirmation & OTP Verification", // Subject line
             text: `Your OTP is ${otp}`, // Fallback text
             html: `
@@ -124,11 +120,6 @@ export const RegistrationUser = async (req: Request, res: Response) => {
             role,
         })
 
-        interface UserPayload {
-            id: string;
-            email: string;
-            name: string;
-        }
         const payload: UserPayload = {
             id: User.id,
             email: User.email,
@@ -154,19 +145,12 @@ export const UserLogin = async (req: Request, res: Response) => {
         if (!Useremail) {
             return res.status(404).json({ message: "User not Found..." })
         }
-        console.log(password);
 
         let machpassword = await bcrypt.compare(password, Useremail.password)
 
-        if (!machpassword) {
-            return res.status(400).json({ message: "Incorrect Password try again..." })
-        }
+        if (!machpassword) return res.status(400).json({ message: "Incorrect Password try again..." })
 
-        if (role !== Useremail?.role) {
-            return res.status(400).json({ message: "Account doesn't exist with current role..." })
-        }
-
-       
+        if (role !== Useremail?.role) return res.status(400).json({ message: "Account doesn't exist with current role..." })
 
         const payload: UserPayload = {
             id: Useremail._id,
@@ -187,15 +171,11 @@ export const UserLogin = async (req: Request, res: Response) => {
 export const UserInfomation = async (req: CustomRequest, res: Response) => {
     try {
         const UserId = req.user?.id;
-
         const user = await UserData.findById(UserId);
-
         if (!user) {
             return res.status(400).json({ message: "User Not Found " })
         }
-
         return res.status(200).json(user)
-
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" })
@@ -244,11 +224,9 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
 
         if (req.files && (req.files as Files).ProfileImg) {
             reqbody.ProfileImg = (req.files as Files)?.ProfileImg[0].originalname;
-            console.log("Updated");
 
         } else {
             reqbody.ProfileImg = user?.ProfileImg
-            console.log("mot Updated");
         }
 
         const updatedUser = await UserData.findByIdAndUpdate(userId, reqbody, {
