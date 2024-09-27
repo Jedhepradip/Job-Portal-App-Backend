@@ -6,11 +6,17 @@ import bcrypt from "bcrypt"
 export const ForgetPassword = async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
-        const user = await UserModel.findOne(email); // Fixing email search        
+        console.log(req.body)
+
+        console.log(email);
+
+        const user = await UserModel.findOne({ email: email }); // Fixing email search        
 
         if (!user) {
             return res.status(400).json({ message: "User not Found" });
         }
+
+        console.log(user);
 
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -70,6 +76,8 @@ export const setUpNewPassword = async (req: Request, res: Response) => {
         const { password } = req.body;
         const userId = req.params.id;
 
+        console.log(password);
+
         if (!password) {
             return res.status(400).json({ message: "Password is missing." });
         }
@@ -78,12 +86,17 @@ export const setUpNewPassword = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
+        console.log("user :", user);
 
         const hashedPassword = await bcrypt.hash(password, 11);
+        const userpasswordupdated = await UserModel.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true })
+        console.log("userpasswordupdated :", userpasswordupdated);
+
         user.password = hashedPassword;
         await user.save();
 
         return res.status(200).json({ message: "Password updated successfully." });
+
     } catch (error) {
         console.error("Error updating password:", error);
         return res.status(500).json({ message: "Internal Server Error" });

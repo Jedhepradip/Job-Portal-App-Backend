@@ -14,6 +14,12 @@ interface MulterFile {
     // Add other properties from Multer's File type if necessary
 }
 
+interface UserPayload {
+    id: string,
+    email: string,
+    name: string,
+}
+
 interface CustomRequest extends Request {
     user?: {
         id: string;  // Define the specific type you expect for 'user.id'
@@ -85,7 +91,6 @@ export const sendLoginOtp = async (req: Request, res: Response) => {
     }
 };
 
-
 //User Registration
 export const RegistrationUser = async (req: Request, res: Response) => {
     try {
@@ -149,6 +154,7 @@ export const UserLogin = async (req: Request, res: Response) => {
         if (!Useremail) {
             return res.status(404).json({ message: "User not Found..." })
         }
+        console.log(password);
 
         let machpassword = await bcrypt.compare(password, Useremail.password)
 
@@ -160,11 +166,7 @@ export const UserLogin = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Account doesn't exist with current role..." })
         }
 
-        interface UserPayload {
-            id: string,
-            email: string,
-            name: string,
-        }
+       
 
         const payload: UserPayload = {
             id: Useremail._id,
