@@ -79,22 +79,11 @@ export const setUpNewPassword = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "User not found." });
         }
 
-        // Hash the new password
         const hashedPassword = await bcrypt.hash(password, 11);
-
-        // Update the user's password
-        const userUpdated = await UserModel.findByIdAndUpdate(
-            userId,
-            { password: hashedPassword },  // Updating password
-            { new: true, select: 'password' } // Return the updated document
-        );
-
-        if (!userUpdated) {
-            return res.status(400).json({ message: "Failed to update password." });
-        }
+        user.password = hashedPassword;
+        await user.save();
 
         return res.status(200).json({ message: "Password updated successfully." });
-
     } catch (error) {
         console.error("Error updating password:", error);
         return res.status(500).json({ message: "Internal Server Error" });
