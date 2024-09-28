@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import jobModel from "../Models/JobModel";
 import UserModel from "../Models/UserModel";
 import Company from "../Models/CompanyModel";
+import path from "path";
+import { log } from "console";
 
 interface CustomRequest extends Request {
     user?: {
@@ -145,31 +147,39 @@ export const GetallJobinAdminCreated = async (req: CustomRequest, res: Response)
         return res.status(500).json({ message: "Internal Server Error..." })
     }
 }
-
+//send Jobs to save User 
 export const SaveJobs = async (req: CustomRequest, res: Response) => {
     try {
-        const JobsId = req.params?.id
-        const UserId = req.user?.id
-        const jobs = await jobModel.findById(JobsId)
-        if (!jobs) { return res.status(400).json({ message: "Jobs Not Found..." }) }
-        const user = await UserModel.findById(UserId)
-        if (!user) { return res.status(400).json({ message: "User not Found..." }) }
+        const JobsId = req.params?.id;
+        const UserId = req.user?.id;
+        console.log(UserId);
+
+        const jobs = await jobModel.findById(JobsId);
+        if (!jobs) {
+            return res.status(400).json({ message: "Jobs Not Found..." });
+        }
+        const user = await UserModel.findById(UserId);
+        if (!user) {
+            return res.status(400).json({ message: "User not Found..." });
+        }
 
         if (user) {
-            if (user.SaveJobs?.length) {
-                user.SaveJobs.filter((e) => {
-                    if (e._id.toHexString() == jobs._id.toHexString()) {
-                        return res.status(400).json({ message: "Jobs Save Already..." });
-                    }
-                });
+            // Use 'some' to check if job is already saved
+            const isJobAlreadySaved = user.SaveJobs?.some(
+                (e) => e._id.toHexString() === jobs._id.toHexString()
+            );
+
+            if (isJobAlreadySaved) {
+                return res.status(400).json({ message: "already Save Jobs..." });
             }
-            user.SaveJobs?.push(jobs._id)
+
+            user.SaveJobs?.push(jobs._id);
             await user.save();
         }
 
-        return res.status(200).json({ message: "Job Save successfully" })
+        return res.status(200).json({ message: "Job Save successfully" });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" })
+        return res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};
