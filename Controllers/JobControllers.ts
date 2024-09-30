@@ -75,6 +75,8 @@ export const UpdateJobs = async (req: CustomRequest, res: Response) => {
 
         const reqBodyData = req.body;
 
+        reqBodyData.requirements = requirements.split(",")
+
         if (JobsFind) {
             if (!title) reqBodyData.title = JobsFind.title;
             if (!description) reqBodyData.description = JobsFind.description;

@@ -172,7 +172,7 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
 
         if (!status) {
             return res.status(401).json({ message: "Something is missing..." })
-        }       
+        }
 
         const Applciationfind = await Applicationcom.findById(applicationId);
 
@@ -185,7 +185,8 @@ export const UpdataStatus = async (req: CustomRequest, res: Response) => {
         await Applciationfind.save()
 
         const jobs = await jobModel.findById(Applciationfind.job);
-        const user = await UserModel.findById(req.user?.id)
+        const user = await UserModel.findById(Applciationfind.applicant)
+        console.log(user);
 
         if (!jobs) return res.status(404).json({ message: "Jobs Not Found...!" })
         if (!user) return res.status(404).json({ message: "user Not Found...!" })
