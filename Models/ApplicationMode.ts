@@ -1,4 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+
+interface Application extends Document {
+    jog?: mongoose.Types.ObjectId[],
+    applicant?: mongoose.Types.ObjectId[],
+    status?: string
+}
 
 const ApplicationSchema = new mongoose.Schema({
     job: {
