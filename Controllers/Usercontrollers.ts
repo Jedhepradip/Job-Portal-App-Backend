@@ -29,10 +29,14 @@ interface CustomRequest extends Request {
 
 export const sendLoginOtp = async (req: Request, res: Response) => {
     try {
-        const { email } = req.body;
+        const { email, number } = req.body;
         const user = await UserModel.findOne({ email: email });
         if (user) {
-            return res.status(400).json({ message: "User already exist with this email..." })
+            return res.status(400).json({ message: "User already exist with this Email..." })
+        }
+        const MobileNum = await UserModel.findOne({ mobile: number })
+        if (MobileNum) {
+            return res.status(400).json({ message: "User already exist with this Number..." })
         }
         // Generate a 4-digit OTP
         const otp = Math.floor(1000 + Math.random() * 9000);
@@ -108,6 +112,14 @@ export const RegistrationUser = async (req: Request, res: Response) => {
         const mobileexist = await UserData.findOne({ mobile: mobile })
         if (mobileexist) {
             return res.status(400).json({ message: "User already exist with this mobile number..." })
+        }
+
+        console.log(!(email == "pradipjedhe69@gmail.com"));
+
+        if (role == "recruiter") {
+            if (!(email == "pradipjedhe69@gmail.com")) {
+                return res.status(400).json({ message: "Only Administrators Can Register For This Role" });
+            }
         }
 
         const haspassword = await bcrypt.hash(password, 11)
