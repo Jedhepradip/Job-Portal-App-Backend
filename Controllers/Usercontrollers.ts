@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import { generateToken } from "../Middewares/generateToken";
 import UserModel from "../Models/UserModel";
 import nodemailer from "nodemailer"
+import { v2 as cloudinary } from 'cloudinary';
 
 interface MulterFile {
     originalname: string;
@@ -26,6 +27,13 @@ interface CustomRequest extends Request {
         // Add other properties if needed
     };
 }
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+    api_key: process.env.CLOUDINARY_API_KEY!,
+    api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
+
 
 export const sendLoginOtp = async (req: Request, res: Response) => {
     try {
@@ -99,6 +107,9 @@ export const RegistrationUser = async (req: Request, res: Response) => {
         if (!req.file) {
             return res.status(400).json({ message: "Profile Img Not Found" });
         }
+
+        const result = await cloudinary.uploader.upload(req.file!.path);
+        console.log(result.secure_url);
 
         if (!name || !email || !mobile || !password || !role) {
             return res.status(400).json({ message: "Something is missing..." })
