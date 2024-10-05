@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import jobModel from "../Models/JobModel";
 import UserModel from "../Models/UserModel";
 import Company from "../Models/CompanyModel";
-import path from "path";
-import { log } from "console";
 
 interface CustomRequest extends Request {
     user?: {

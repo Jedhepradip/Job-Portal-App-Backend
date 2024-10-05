@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import CompanyData from "../Models/CompanyModel";
 import jobModel from "../Models/JobModel";
 import UserModel from "../Models/UserModel";
+import { v2 as cloudinary } from 'cloudinary';
+
 
 interface CustomRequest extends Request {
     user?: {
@@ -10,10 +12,17 @@ interface CustomRequest extends Request {
     };
 }
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+    api_key: process.env.CLOUDINARY_API_KEY!,
+    api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
+
 export const registerCompany = async (req: CustomRequest, res: Response) => {
     try {
         let LoginUserId = req.user?.id;
         const { CompanyName } = req.body
+
         if (!CompanyName) {
             return res.status(400).json({ message: "Something is missing..." })
         }
@@ -83,6 +92,8 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         const companyId = req.params.id;
         const company = await CompanyData.findById(companyId);
 
+        const result = await cloudinary.uploader.upload(req.file!.path);
+
         if (!company) {
             return res.status(404).json({ message: "Company not found" });
         }
@@ -112,7 +123,7 @@ export const CompanyUpdate = async (req: Request, res: Response) => {
         }
 
         if (req.file) {
-            company.CompanyLogo = req.file.originalname
+            company.CompanyLogo = result.secure_url
             await company.save();
         } else {
             company.CompanyLogo = company.CompanyLogo

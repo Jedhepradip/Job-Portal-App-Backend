@@ -109,7 +109,6 @@ export const RegistrationUser = async (req: Request, res: Response) => {
         }
 
         const result = await cloudinary.uploader.upload(req.file!.path);
-        console.log(result.secure_url);
 
         if (!name || !email || !mobile || !password || !role) {
             return res.status(400).json({ message: "Something is missing..." })
@@ -125,8 +124,6 @@ export const RegistrationUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "User already exist with this mobile number..." })
         }
 
-        console.log(!(email == "pradipjedhe69@gmail.com"));
-
         if (role == "recruiter") {
             if (!(email == "pradipjedhe69@gmail.com")) {
                 return res.status(400).json({ message: "Only Administrators Can Register For This Role" });
@@ -135,7 +132,7 @@ export const RegistrationUser = async (req: Request, res: Response) => {
 
         const haspassword = await bcrypt.hash(password, 11)
         const User = new UserData({
-            ProfileImg: req.file?.originalname,
+            ProfileImg: result.secure_url,
             name,
             email,
             mobile,
@@ -215,6 +212,7 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+
         reqbody.skills = skills.split(",")
 
         if (email) {
@@ -240,13 +238,15 @@ export const UserProfileUpdate = async (req: CustomRequest, res: Response) => {
         }
 
         if (req.files && (req.files as Files).ResumeFile) {
-            reqbody.ResumeFile = (req.files as Files)?.ResumeFile[0].originalname; // Or use 'path' or other properties            
+            const result1 = await cloudinary.uploader.upload((req.files as Files)?.ResumeFile[0].path);
+            reqbody.ResumeFile = result1.secure_url; // Or use 'path' or other properties            
         } else {
             reqbody.ResumeFile = user?.ResumeFile
         }
 
         if (req.files && (req.files as Files).ProfileImg) {
-            reqbody.ProfileImg = (req.files as Files)?.ProfileImg[0].originalname;
+            const result2 = await cloudinary.uploader.upload((req.files as Files)?.ProfileImg[0].path);
+            reqbody.ProfileImg = result2.secure_url
 
         } else {
             reqbody.ProfileImg = user?.ProfileImg
